@@ -55,7 +55,7 @@ app.get('/ping', (req, res) => {
 //   console.log(err);
 // });
 
-app.listen(process.env.PORT || port, (err, res) => {
+app.listen(port, (err, res) => {
   if (err) {
     console.log(err)
     return res.status(500).send(err.message)
