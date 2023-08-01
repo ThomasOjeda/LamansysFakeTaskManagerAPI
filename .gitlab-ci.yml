@@ -1,0 +1,18 @@
+image: node:latest
+
+before_script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+
+stages:
+    - production
+
+production:
+    type: deploy
+    stage: production
+    image: ruby:latest
+    script:
+        - dpl --provider=heroku --app=lamansys-tasks-fake-api --api-key=10d65f38-6a00-46a1-8c3a-8478605529c5
+    only:
+        - master
