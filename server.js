@@ -44,6 +44,14 @@ app.use("/api/login", loginRoute.login); //✅
 
 //app.use("/", (req,res) => {res.sendFile(path.join(__dirname, "./public/simpledocs.html"))});
 
+app.get('/', (req, res) => {
+  res.send('Express JS on Vercel')
+})
+
+app.get('/ping', (req, res) => {
+  res.send('pong 🏓')
+})
+
 //mongoose
 mongoose.set("useFindAndModify", false);
 mongoose.set("useUnifiedTopology", true);
