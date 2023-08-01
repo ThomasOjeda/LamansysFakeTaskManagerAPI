@@ -61,9 +61,9 @@ app.listen(port, (err, res) => {
     return res.status(500).send(err.message)
   } else {
     console.log('[INFO] Server Running on port:', port)
-    mongoose.set("useFindAndModify", false);
-    mongoose.set("useUnifiedTopology", true);
-    mongoose.connect(process.env.DB_STRING, { useNewUrlParser: true })
+    // mongoose.set("useFindAndModify", false);
+    // mongoose.set("useUnifiedTopology", true);
+    // mongoose.connect(process.env.DB_STRING, { useNewUrlParser: true })
   }
 })
 
