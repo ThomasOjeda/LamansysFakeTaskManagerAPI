@@ -9,7 +9,7 @@ const path = require("path");
 const app = express();
 
 //port
-const port = 6400;
+const port = 8080;
 
 //routes
 const projectRoute = require("./routes/project");
