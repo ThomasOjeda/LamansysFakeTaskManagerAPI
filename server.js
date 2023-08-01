@@ -11,14 +11,14 @@ const app = express();
 //port
 const port = process.env.PORT || 8080;
 
-// //routes
-// const projectRoute = require("./routes/project");
-// const epicRoute = require("./routes/epic");
-// const sprintRoute = require("./routes/sprint");
-// const storyRoute = require("./routes/story");
-// const taskRoute = require("./routes/task");
-// const userRoute = require("./routes/user");
-// const loginRoute = require("./routes/auth");
+//routes
+const projectRoute = require("./routes/project");
+const epicRoute = require("./routes/epic");
+const sprintRoute = require("./routes/sprint");
+const storyRoute = require("./routes/story");
+const taskRoute = require("./routes/task");
+const userRoute = require("./routes/user");
+const loginRoute = require("./routes/auth");
 
 // //middleware
 // app.use(cors());
