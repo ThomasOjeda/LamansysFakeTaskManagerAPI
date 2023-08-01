@@ -44,17 +44,17 @@ app.get('/ping', (req, res) => {
 })
 
 //mongoose
-mongoose.set("useFindAndModify", false);
-mongoose.set("useUnifiedTopology", true);
-mongoose
-  .connect(process.env.DB_STRING, { useNewUrlParser: true })
-  .then(() => {
+// mongoose.set("useFindAndModify", false);
+// mongoose.set("useUnifiedTopology", true);
+// mongoose
+//   .connect(process.env.DB_STRING, { useNewUrlParser: true })
+  // .then(() => {
     app.listen(process.env.PORT || port, () => {
       console.log("app running on port", process.env.PORT || port);
     });
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+  // })
+  // .catch((err) => {
+  //   console.log(err);
+  // });
 
 //module.exports = app;
