@@ -23,15 +23,14 @@ module.exports.getStories = (req, res) => {
       name: sort
     })
     .then(stories => {
-      const data = {
-        success: true,
+      res.status(200).json({
+        status: "success",
         data: stories
-      };
-      res.json(data)
+      })
     })
     .catch(err =>
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       })
     )
@@ -40,17 +39,23 @@ module.exports.getStories = (req, res) => {
 module.exports.getStory = (req, res) => {
   const id = req.params.id
 
+  if (id == null || id == undefined) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Story Id is required!" }
+    })
+  }
+
   Story.findById(id)
-    .then(stories => {
-      const data = {
-        success: true,
-        data: stories
-      };
-      res.json(data)
+    .then(story => {
+      res.status(200).json({
+        status: "success",
+        data: story
+      })
     })
     .catch(err => {
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       });
     })
@@ -59,71 +64,94 @@ module.exports.getStory = (req, res) => {
 module.exports.getStoriesByEpic = (req, res) => {
   const epicid = req.params.id
 
-  Epic.findById(epicid).then(epics => {
-    // console.log(epics);
-    if (epics.length > 0) {
-      Story.findById(epics[0]._id)
-        .then(stories => {
-          let data = {
-            success: true,
-            data: stories
-          };
-          res.json(data)
+  if (epicid == null || epicid == undefined) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Epic Id is required!" }
+    })
+  } else {
+    Epic.findById(epicid).then(epics => {
+      // console.log(epics);
+      if (epics.length > 0) {
+        Story.findById(epics[0]._id)
+          .then(stories => {
+            res.status(200).json({
+              status: "success",
+              data: stories
+            })
+          })
+          .catch(err => {
+            res.status(500).json({
+              status: "error",
+              message: err
+            });
+          })
+      } else {
+        res.status(500).json({
+          status: "error",
+          data: null,
+          message: { epic: "Epic not found" }
         })
-        .catch(err => {
-          res.json({
-            success: false,
-            message: err
-          });
-        })
-    } else {
-      let data = {
-        success: false,
-        data: null,
-        message: "epic not found"
-      };
-      res.json(data)
-    }
+      }
 
-  })
+    })
+  }
+
+
 }
 
 module.exports.getStoriesBySprint = (req, res) => {
   const sprintid = req.params.id
 
-  Sprint.findById(sprintid).then(sprints => {
-    // find epic by id and get tasks 
-    if (sprints.length > 0) {
-      Story.findById(sprints[0].id)
-        .then(stories => {
-          let data = {
-            success: true,
-            data: stories
-          };
-          res.json(data)
+  if (sprintid == null || sprintid == undefined) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Sprint Id is required!" }
+    })
+  } else {
+
+    Sprint.findById(sprintid).then(sprints => {
+      // find epic by id and get tasks 
+      if (sprints.length > 0) {
+        Story.findById(sprints[0].id)
+          .then(stories => {
+            res.status(200).json({
+              status: "success",
+              data: stories
+            })
+          })
+          .catch(err => {
+            res.status(500).json({
+              status: "error",
+              message: err
+            });
+          })
+      } else {
+        res.status(500).json({
+          status: "error",
+          data: null,
+          message: { sprint: "Sprint not found" }
         })
-        .catch(err => {
-          res.json({
-            success: false,
-            message: err
-          });
-        })
-    } else {
-      let data = {
-        success: false,
-        data: null,
-        message: "sprint not found"
-      };
-      res.json(data)
-    }
-  })
+      }
+    })
+  }
 }
 
 module.exports.addStory = (req, res) => {
   if (typeof req.body == undefined) {
-    res.json({
-      status: "error",
-      message: "something went wrong! check your sent data"
+    res.status(400).json({
+      status: "fail",
+      message: { body: "The request is missing a valid JSON body." }
+    })
+  } else if (req.body.name == null || req.body.name == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: { name: "Story name is required!" }
+    })
+  } else if (req.body.epic == null || req.body.epic == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: { epic: "Epic id is required!" }
     })
   } else {
 
@@ -143,16 +171,27 @@ module.exports.addStory = (req, res) => {
       icon: req.body.icon || null,
     })
     story.save()
-      .then(story => res.status(201).json(story))
-      .catch(err => res.json(err))
+      .then(story => res.status(201).json({
+        status: "success",
+        data: story
+      }))
+      .catch(err => res.status(500).json({
+        status: "error",
+        message: err
+      }))
   }
 }
 
 module.exports.editStory = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
-    res.json({
+  if (req.params.id == undefined || req.params.id == null) {
+    res.status(400).json({
+      status: "fail",
+      message: { id: "Missing Story id!"}
+    })
+  } else if (typeof req.body == undefined) {
+    res.status(400).json({
       status: "error",
-      message: "something went wrong! check your sent data"
+      message: {body: "The request is missing a valid JSON body."}
     })
   } else {
     const id = req.params.id
@@ -172,24 +211,27 @@ module.exports.editStory = (req, res) => {
         story.status = req.body.status || story.status;
         story.icon = req.body.icon || story.icon;
 
-        story.save().then(story => res.json(story))
+        story.save().then(story => res.status(200).json({
+          status: "success",
+          data: story
+        }))
       })
   }
 }
 
 module.exports.deleteStory = (req, res) => {
   if (typeof req.params.id == undefined) {
-    res.json({
-      status: "error",
-      message: "something went wrong! check your sent data"
+    res.status(400).json({
+      status: "fail",
+      message: { id: "Missing Story id!"}
     })
   } else {
     const id = req.params.id
     Story.findByIdAndDelete(id)
       .then((story) => {
-        res.json({
+        res.status(200).json({
           status: "success",
-          message: "story deleted"
+          message: "Story deleted successfully!"
         })
       })
   }

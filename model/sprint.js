@@ -3,13 +3,6 @@ const project = require('./project');
 const schema = mongoose.Schema;
 
 const sprintSchema = new schema({
-    id: {
-        type: Number,
-        required: true,
-        min: 1,
-        unique: true,
-        dropDups: true
-    },
     name: {
         type: String,
         required: true

@@ -87,20 +87,20 @@ module.exports.getEpicsByProject = (req, res) => {
 }
 
 module.exports.addEpic = (req, res) => {
-  if (req.body === undefined) {
+  if (typeof req.body == undefined) {
     res.status(400).json({
       status: "fail",
-      message: {body: "The request is missing a valid JSON body."}
+      message: { body: "The request is missing a valid JSON body." }
     })
-  } else if(req.body.project == null || req.body.project == undefined) {
+  } else if (req.body.project == null || req.body.project == undefined) {
     res.status(400).json({
       status: "fail",
-      message: {project: "Project id is required!"}
+      message: { project: "Project id is required!" }
     })
-  } else if(req.body.name == null || req.body.name == undefined) {
+  } else if (req.body.name == null || req.body.name == undefined) {
     res.status(400).json({
       status: "fail",
-      message: {name: "Epic name is required!"}
+      message: { name: "Epic name is required!" }
     })
   } else {
 
@@ -126,12 +126,12 @@ module.exports.editEpic = (req, res) => {
   if (req.params.id == undefined || req.params.id == null) {
     res.status(400).json({
       status: "fail",
-      message: { id: "Missing Epic id!"}
+      message: { id: "Missing Epic id!" }
     })
   } else if (typeof req.body == undefined) {
     res.status(400).json({
       status: "error",
-      message: {body: "The request is missing a valid JSON body."}
+      message: { body: "The request is missing a valid JSON body." }
     })
   } else {
     const id = req.params.id
@@ -153,7 +153,7 @@ module.exports.deleteEpic = (req, res) => {
   if (typeof req.params.id == undefined) {
     res.status(400).json({
       status: "fail",
-      data: { id: "Missing epic id!"}
+      data: { id: "Missing epic id!" }
     })
   } else {
     const id = req.params.id
@@ -164,5 +164,9 @@ module.exports.deleteEpic = (req, res) => {
           message: "Epic deleted successfully!"
         })
       })
+      .catch(err => res.status(500).json({
+        status: "error",
+        message: err
+      }))
   }
 }

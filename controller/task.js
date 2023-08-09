@@ -10,15 +10,14 @@ module.exports.getTasks = (req, res) => {
       name: sort
     })
     .then(tasks => {
-      const data = {
-        success: true,
+      res.status(200).json({
+        status: "success",
         data: tasks
-      };
-      res.json(data)
+      })
     })
     .catch(err =>
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       })
     )
@@ -27,17 +26,23 @@ module.exports.getTasks = (req, res) => {
 module.exports.getTask = (req, res) => {
   const id = req.params.id
 
+  if (id == null || id == undefined) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Task Id is required!" }
+    })
+  }
+
   Task.findById(id)
     .then(tasks => {
-      const data = {
-        success: true,
+      res.status(200).json({
+        status: "success",
         data: tasks
-      };
-      res.json(data)
+      })
     })
     .catch(err => {
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       });
     })
@@ -46,39 +51,56 @@ module.exports.getTask = (req, res) => {
 module.exports.getTasksByStory = (req, res) => {
   const storyid = req.params.id
 
-  Story.findById(storyid).then(story => {
-    // find story by id and get tasks 
-    if (story.length > 0) {
-      Task.find({ story: story[0]._id })
-        .then(tasks => {
-          let data = {
-            success: true,
-            data: tasks
-          };
-          res.json(data)
+  if (epicid == null || epicid == undefined) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Story Id is required!" }
+    })
+  } else {
+    Story.findById(storyid).then(story => {
+      // find story by id and get tasks 
+      if (story.length > 0) {
+        Task.findById(story[0]._id)
+          .then(tasks => {
+            res.status(200).json({
+              status: "success",
+              data: tasks
+            })
+          })
+          .catch(err => {
+            res.status(500).json({
+              status: "error",
+              message: err
+            });
+          })
+      } else {
+        res.status(500).json({
+          status: "error",
+          data: null,
+          message: { epic: "Story not found" }
         })
-        .catch(err => {
-          res.json({
-            success: false,
-            message: err
-          });
-        })
-    } else {
-      let data = {
-        success: false,
-        data: null,
-        message: "story not found"
-      };
-      res.json(data)
-    }
-  })
+      }
+    })
+  }
+
+
 }
 
 module.exports.addTask = (req, res) => {
   if (typeof req.body == undefined) {
-    res.json({
-      status: "error",
-      message: "something went wrong! check your sent data"
+    res.status(400).json({
+      status: "fail",
+      message: { body: "The request is missing a valid JSON body." }
+    })
+  } else if (req.body.name == null || req.body.name == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: { name: "Task name is required!" }
+    })
+  } else if (req.body.story == null || req.body.story == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: { epic: "Story id is required!" }
     })
   } else {
 
@@ -91,28 +113,27 @@ module.exports.addTask = (req, res) => {
       done: req.body.done || false,
     })
     task.save()
-      .then(task => {
-        const data = {
-          success: true,
-          data: task
-        };
-        res.status(201).json(data)
-      })
-      .catch(err => {
-        res.json({
-          success: false,
-          message: err
-        });
-      })
-
+      .then(task => res.status(201).json({
+        status: "success",
+        data: task
+      }))
+      .catch(err => res.status(500).json({
+        status: "error",
+        message: err
+      }))
   }
 }
 
 module.exports.editTask = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
-    res.json({
-      success: false,
-      message: "something went wrong! check your sent data"
+  if (req.params.id == undefined || req.params.id == null) {
+    res.status(400).json({
+      status: "fail",
+      message: { id: "Missing Task id!" }
+    })
+  } else if (typeof req.body == undefined) {
+    res.status(400).json({
+      status: "error",
+      message: { body: "The request is missing a valid JSON body." }
     })
   } else {
     const id = req.params.id;
@@ -125,37 +146,30 @@ module.exports.editTask = (req, res) => {
         task.due = req.body.due || task.due;
         task.done = req.body.done || task.done;
 
-        task.save().then(task => {
-          const data = {
-            success: true,
-            data: task
-          };
-          res.json(data)
-        })
+        task.save().then(task => res.json({
+          status: "success",
+          data: task
+        }))
       })
   }
 }
 
 module.exports.deleteTask = (req, res) => {
-  if (req.params.id == null) {
-    res.json({
-      success: false,
-      message: "something went wrong! check your sent data"
+  if (typeof req.params.id == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: { id: "Missing Task id!" }
     })
   } else {
+    const id = req.params.id
     Task.findByIdAndDelete(req.params.id)
-      .then(task => {
-        const data = {
-          success: true,
-          data: task
-        };
-        res.json(data)
-      })
-      .catch(err => {
-        res.json({
-          success: false,
+      .then(task => res.status(200).json({
+        status: "success",
+        data: task
+      }))
+      .catch(err => res.status(500).json({
+          status: "error",
           message: err
-        });
-      })
+      }))
   }
 }

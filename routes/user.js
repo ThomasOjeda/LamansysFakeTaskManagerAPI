@@ -3,7 +3,7 @@ const router = express.Router()
 const user = require('../controller/user')
 const { checkToken } = require('../controller/auth')
 
-router.get('/',checkToken, user.getAllUser)
+router.get('/',checkToken, user.getAllUsers)
 router.get('/:id',checkToken, user.getUser)
 router.post('/',user.addUser)
 router.put('/:id',checkToken, user.editUser)

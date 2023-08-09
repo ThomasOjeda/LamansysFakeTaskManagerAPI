@@ -65,7 +65,7 @@ module.exports.getProject = (req, res) => {
 
 module.exports.addProject = (req, res) => {
   // check if body is empty
-  if  (req.body.name == null || req.body.name == "") {
+  if (req.body.name == null || req.body.name == "") {
     res.status(400).json({
       status: "fail",
       data: { name: "Project name is required!" }
@@ -95,12 +95,12 @@ module.exports.editProject = (req, res) => {
   if (req.params.id == undefined || req.params.id == null) {
     res.status(400).json({
       status: "fail",
-      message: { id: "Missing project id!"}
+      message: { id: "Missing project id!" }
     })
   } else if (typeof req.body == undefined) {
     res.status(400).json({
       status: "fail",
-      message: {body: "The request is missing a valid JSON body."}
+      message: { body: "The request is missing a valid JSON body." }
     })
   } else {
     const id = req.params.id
@@ -122,7 +122,7 @@ module.exports.deleteProject = (req, res) => {
   if (typeof req.params.id == undefined) {
     res.status(400).json({
       status: "fail",
-      data: { id: "Missing project id!"}
+      data: { id: "Missing project id!" }
     })
   } else {
     const id = req.params.id
@@ -133,5 +133,9 @@ module.exports.deleteProject = (req, res) => {
           message: "Project deleted successfully!"
         })
       })
+      .catch(err => res.status(500).json({
+        status: "error",
+        message: err
+      }))
   }
 }
