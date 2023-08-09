@@ -7,7 +7,7 @@ module.exports.getTasks = (req, res) => {
 
   Task.find()
     .limit(limit).sort({
-      id: sort
+      name: sort
     })
     .then(tasks => {
       const data = {
@@ -24,12 +24,30 @@ module.exports.getTasks = (req, res) => {
     )
 }
 
+module.exports.getTask = (req, res) => {
+  const id = req.params.id
+
+  Task.findById(id)
+    .then(tasks => {
+      const data = {
+        success: true,
+        data: tasks
+      };
+      res.json(data)
+    })
+    .catch(err => {
+      res.json({
+        success: false,
+        message: err
+      });
+    })
+}
+
 module.exports.getTasksByStory = (req, res) => {
   const storyid = req.params.id
 
-  Story.find({ id: storyid }).then(story => {
+  Story.findById(storyid).then(story => {
     // find story by id and get tasks 
-    // console.log(story);
     if (story.length > 0) {
       Task.find({ story: story[0]._id })
         .then(tasks => {
@@ -56,58 +74,35 @@ module.exports.getTasksByStory = (req, res) => {
   })
 }
 
-module.exports.getTask = (req, res) => {
-  const id = req.params.id
-
-  Task.find({ id: id })
-    .then(tasks => {
-      const data = {
-        success: true,
-        data: tasks
-      };
-      res.json(data)
-    })
-    .catch(err => {
-      res.json({
-        success: false,
-        message: err
-      });
-    })
-}
-
 module.exports.addTask = (req, res) => {
   if (typeof req.body == undefined) {
     res.json({
       status: "error",
-      message: "data is undefined"
+      message: "something went wrong! check your sent data"
     })
   } else {
-    Task.find().sort({_id:-1}).limit(1)
-    .then((last) => {
-        const id = last[0].id + 1
-        const task = new Task({
-          id: id,
-          name: req.body.name,
-          description: req.body.description,
-          story: req.body.story,
-          created: req.body.created,
-          due: req.body.due,
-          done: req.body.done
-        })
-        task.save()
-          .then(task => {
-            const data = {
-              success: true,
-              data: task
-            };
-            res.json(data)
-          })
-          .catch(err => {
-            res.json({
-              success: false,
-              message: err
-            });
-          })
+
+    const task = new Task({
+      name: req.body.name,
+      description: req.body.description || null,
+      story: req.body.story,
+      created: req.body.created || Date.now(),
+      due: req.body.due || null,
+      done: req.body.done || false,
+    })
+    task.save()
+      .then(task => {
+        const data = {
+          success: true,
+          data: task
+        };
+        res.status(201).json(data)
+      })
+      .catch(err => {
+        res.json({
+          success: false,
+          message: err
+        });
       })
 
   }
@@ -116,15 +111,13 @@ module.exports.addTask = (req, res) => {
 module.exports.editTask = (req, res) => {
   if (typeof req.body == undefined || req.params.id == null) {
     res.json({
-      succes: false,
+      success: false,
       message: "something went wrong! check your sent data"
     })
   } else {
     const id = req.params.id;
-    console.log(id);
-    Task.find({id: id}).limit(1)
+    Task.findById(id)
       .then((task) => {
-        task = task[0];
         task.name = req.body.name || task.name;
         task.description = req.body.description || task.description;
         task.story = req.body.story || task.story;
@@ -147,10 +140,10 @@ module.exports.deleteTask = (req, res) => {
   if (req.params.id == null) {
     res.json({
       success: false,
-      message: "task id should be provided"
+      message: "something went wrong! check your sent data"
     })
   } else {
-    Task.findOneAndDelete({ id: req.params.id })
+    Task.findByIdAndDelete(req.params.id)
       .then(task => {
         const data = {
           success: true,

@@ -5,13 +5,6 @@ const user = require('./user');
 const schema = mongoose.Schema;
 
 const storySchema = new schema({
-    id: {
-        type: Number,
-        required: true,
-        min: 1,
-        unique: true,
-        dropDups: true
-    },
     name: {
         type: String,
         required: true

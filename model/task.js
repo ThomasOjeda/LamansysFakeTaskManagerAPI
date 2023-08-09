@@ -3,13 +3,6 @@ const story = require('./story');
 const schema = mongoose.Schema;
 
 const taskSchema = new schema({
-    id: {
-        type: Number,
-        required: true,
-        min: 1,
-        unique: true,
-        dropDups: true
-    },
     name: {
         type: String,
         required: true

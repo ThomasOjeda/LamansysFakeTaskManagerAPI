@@ -25,15 +25,14 @@ module.exports.getProjects = (req, res) => {
       name: sort
     })
     .then(projects => {
-      const data = {
-        success: true,
+      res.status(200).json({
+        status: "success",
         data: projects
-      };
-      res.json(data)
+      })
     })
     .catch(err => {
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       });
     })
@@ -42,28 +41,34 @@ module.exports.getProjects = (req, res) => {
 module.exports.getProject = (req, res) => {
   const id = req.params.id
 
+  if (id == null) {
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Project Id is required!" }
+    })
+  }
+
   Project.findById(id)
     .then(project => {
-      const data = {
-        success: true,
+      res.status(200).json({
+        status: "success",
         data: project
-      };
-      res.json(data)
+      })
     })
     .catch(err => {
-      res.json({
-        success: false,
+      res.status(500).json({
+        status: "error",
         message: err
       });
     })
 }
 
 module.exports.addProject = (req, res) => {
-  console.log(req);
-  if (typeof req.body == undefined) {
-    res.json({
-      status: "error",
-      message: "data is undefined"
+  // check if body is empty
+  if  (req.body.name == null || req.body.name == "") {
+    res.status(400).json({
+      status: "fail",
+      data: { name: "Project name is required!" }
     })
   } else {
 
@@ -75,16 +80,27 @@ module.exports.addProject = (req, res) => {
       icon: req.body.icon || null
     })
     project.save()
-      .then(project => res.status("201").json(project))
-      .catch(err => res.json(err))
+      .then(project => res.status(201).json({
+        status: "success",
+        data: project
+      }))
+      .catch(err => res.status(500).json({
+        status: "error",
+        message: err
+      }))
   }
 }
 
 module.exports.editProject = (req, res) => {
-  if (typeof req.body == undefined || req.params.id == null) {
-    res.json({
-      status: "error",
-      message: "something went wrong! check your sent data"
+  if (req.params.id == undefined || req.params.id == null) {
+    res.status(400).json({
+      status: "fail",
+      message: { id: "Missing project id!"}
+    })
+  } else if (typeof req.body == undefined) {
+    res.status(400).json({
+      status: "fail",
+      message: {body: "The request is missing a valid JSON body."}
     })
   } else {
     const id = req.params.id
@@ -94,24 +110,27 @@ module.exports.editProject = (req, res) => {
         project.description = req.body.description || project.description;
         project.icon = req.body.icon || project.icon;
         project.members = req.body.members || project.members;
-        project.save().then(project => res.json(project))
+        project.save().then(project => res.status(200).json({
+          status: "success",
+          data: project
+        }))
       })
   }
 }
 
 module.exports.deleteProject = (req, res) => {
   if (typeof req.params.id == undefined) {
-    res.json({
-      status: "error",
-      message: "something went wrong! check your sent data"
+    res.status(400).json({
+      status: "fail",
+      data: { id: "Missing project id!"}
     })
   } else {
     const id = req.params.id
     Project.findByIdAndDelete(id)
       .then((project) => {
-        res.json({
+        res.status(200).json({
           status: "success",
-          message: "project deleted"
+          message: "Project deleted successfully!"
         })
       })
   }

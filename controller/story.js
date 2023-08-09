@@ -3,9 +3,10 @@ const Sprint = require('../model/sprint')
 const Story = require('../model/story')
 
 module.exports.getStories = (req, res) => {
+
   const limit = Number(req.query.limit) || 0
   const sort = req.query.sort == "desc" ? -1 : 1
-  console.log(req.userFromJWT);
+
   Story.find(
     {
       $or: [
@@ -19,7 +20,7 @@ module.exports.getStories = (req, res) => {
     }
   )
     .limit(limit).sort({
-      id: sort
+      name: sort
     })
     .then(stories => {
       const data = {
@@ -39,7 +40,7 @@ module.exports.getStories = (req, res) => {
 module.exports.getStory = (req, res) => {
   const id = req.params.id
 
-  Story.find({ id: id })
+  Story.findById(id)
     .then(stories => {
       const data = {
         success: true,
@@ -57,12 +58,11 @@ module.exports.getStory = (req, res) => {
 
 module.exports.getStoriesByEpic = (req, res) => {
   const epicid = req.params.id
-  //console.log("epicid: " + epicid);
 
-  Epic.find({ id: epicid }).then(epics => {
+  Epic.findById(epicid).then(epics => {
     // console.log(epics);
     if (epics.length > 0) {
-      Story.find({ epic: epics[0]._id })
+      Story.findById(epics[0]._id)
         .then(stories => {
           let data = {
             success: true,
@@ -91,11 +91,10 @@ module.exports.getStoriesByEpic = (req, res) => {
 module.exports.getStoriesBySprint = (req, res) => {
   const sprintid = req.params.id
 
-  Sprint.find({ id: sprintid }).then(sprints => {
+  Sprint.findById(sprintid).then(sprints => {
     // find epic by id and get tasks 
-    // console.log(sprints);
     if (sprints.length > 0) {
-      Story.find({ sprint: sprints[0].id })
+      Story.findById(sprints[0].id)
         .then(stories => {
           let data = {
             success: true,
@@ -124,36 +123,28 @@ module.exports.addStory = (req, res) => {
   if (typeof req.body == undefined) {
     res.json({
       status: "error",
-      message: "data is undefined"
+      message: "something went wrong! check your sent data"
     })
   } else {
-    let storyCount = 0;
 
-    Story.find().countDocuments(function (err, count) {
-      storyCount = count
+    const story = new Story({
+      name: req.body.name,
+      description: req.body.description || null,
+      epic: req.body.epic,
+      sprint: req.body.sprint || null,
+      owner: req.body.owner || null,
+      assignedTo: [req.body.owner] || [],
+      points: req.body.points || null,
+      created: req.body.created || Date.now(),
+      due: req.body.due || null,
+      started: req.body.started || null,
+      finished: req.body.finished || null,
+      status: req.body.status || "todo",
+      icon: req.body.icon || null,
     })
-      .then(() => {
-        const story = new Story({
-          id: storyCount + 1,
-          name: req.body.name,
-          description: req.body.description,
-          epic: req.body.epic,
-          sprint: req.body.sprint,
-          owner: req.body.owner,
-          assignedTo: [],
-          points: req.body.points,
-          created: req.body.created,
-          due: req.body.due,
-          started: req.body.started,
-          finished: req.body.finished,
-          status: req.body.status,
-          icon: req.body.icon,
-        })
-        story.save()
-          .then(story => res.json(story))
-          .catch(err => res.json(err))
-      })
-
+    story.save()
+      .then(story => res.status(201).json(story))
+      .catch(err => res.json(err))
   }
 }
 
@@ -165,7 +156,7 @@ module.exports.editStory = (req, res) => {
     })
   } else {
     const id = req.params.id
-    Story.findOne({ id: id })
+    Story.findById(id)
       .then((story) => {
         story.name = req.body.name || story.name;
         story.description = req.body.description || story.description;
@@ -186,20 +177,20 @@ module.exports.editStory = (req, res) => {
   }
 }
 
-/*
-module.exports.deleteStore = (req, res) => {
-  if (req.params.id == null) {
+module.exports.deleteStory = (req, res) => {
+  if (typeof req.params.id == undefined) {
     res.json({
       status: "error",
-      message: "cart id should be provided"
+      message: "something went wrong! check your sent data"
     })
   } else {
-    Store.findOneAndDelete({ _id: req.params.id })
-      //.select(['-_id'])
-      .then(store => {
-        res.json(store)
+    const id = req.params.id
+    Story.findByIdAndDelete(id)
+      .then((story) => {
+        res.json({
+          status: "success",
+          message: "story deleted"
+        })
       })
-      .catch(err => res.json(err))
   }
 }
-*/
