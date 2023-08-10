@@ -73,7 +73,7 @@ module.exports.getStoriesByEpic = (req, res) => {
     Epic.findById(epicid).then(epics => {
 
       if (epics) {
-        Story.findB({ epic: epics._id })
+        Story.find({ epic: epics._id })
           .then(stories => {
             res.status(200).json({
               status: "success",
