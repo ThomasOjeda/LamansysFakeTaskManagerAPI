@@ -159,6 +159,7 @@ module.exports.deleteEpic = (req, res) => {
     const id = req.params.id
     Epic.findByIdAndDelete(id)
       .then((epic) => {
+        console.log(epic);
         res.status(200).json({
           status: "success",
           message: "Epic deleted successfully!"

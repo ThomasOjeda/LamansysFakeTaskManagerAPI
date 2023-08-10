@@ -10,5 +10,6 @@ router.get("/:id/tasks", checkToken, task.getTasksByStory);
 router.post("/", checkToken, story.addStory);
 router.put("/:id", checkToken, story.editStory);
 router.patch("/:id", checkToken, story.editStory);
+router.delete("/:id", checkToken, story.deleteStory);
 
 module.exports = router;
