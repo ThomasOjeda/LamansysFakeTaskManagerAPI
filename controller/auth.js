@@ -7,7 +7,7 @@ module.exports.login = (req, res) => {
   
   const username = req.body.username;
   const password = req.body.password;
-  console.log("Hello from login!",username, password);
+  //console.log("Hello from login!",username, password);
 
   if (username != undefined && password != undefined) {
     User.findOne({
@@ -63,7 +63,7 @@ module.exports.checkToken = (req, res, next) => {
   if (token) {
     //token = token.slice(7); // remove "bearer "
     jwt.verify(token, "Olivia8289", (err, decoded) => {
-      console.log('---- VERIFY: ',err, decoded);
+      //console.log('---- VERIFY: ',err, decoded);
       if (err) {
         res.status(401).json({
           success: false,

@@ -59,8 +59,8 @@ module.exports.getTasksByStory = (req, res) => {
   } else {
     Story.findById(storyid).then(story => {
       // find story by id and get tasks 
-      if (story.length > 0) {
-        Task.findById(story[0]._id)
+      if (story) {
+        Task.find({ story: story._id })
           .then(tasks => {
             res.status(200).json({
               status: "success",
@@ -77,7 +77,7 @@ module.exports.getTasksByStory = (req, res) => {
         res.status(500).json({
           status: "error",
           data: null,
-          message: { epic: "Story not found" }
+          message: { story: "Story not found" }
         })
       }
     })
@@ -168,8 +168,8 @@ module.exports.deleteTask = (req, res) => {
         data: task
       }))
       .catch(err => res.status(500).json({
-          status: "error",
-          message: err
+        status: "error",
+        message: err
       }))
   }
 }

@@ -71,9 +71,9 @@ module.exports.getStoriesByEpic = (req, res) => {
     })
   } else {
     Epic.findById(epicid).then(epics => {
-      // console.log(epics);
-      if (epics.length > 0) {
-        Story.findById(epics[0]._id)
+
+      if (epics) {
+        Story.findB({ epic: epics._id })
           .then(stories => {
             res.status(200).json({
               status: "success",
@@ -110,10 +110,10 @@ module.exports.getStoriesBySprint = (req, res) => {
     })
   } else {
 
-    Sprint.findById(sprintid).then(sprints => {
+    Sprint.findById(sprintid).then(sprint => {
       // find epic by id and get tasks 
-      if (sprints.length > 0) {
-        Story.findById(sprints[0].id)
+      if (sprint) {
+        Story.find({ sprint: sprint._id })
           .then(stories => {
             res.status(200).json({
               status: "success",
@@ -186,12 +186,12 @@ module.exports.editStory = (req, res) => {
   if (req.params.id == undefined || req.params.id == null) {
     res.status(400).json({
       status: "fail",
-      message: { id: "Missing Story id!"}
+      message: { id: "Missing Story id!" }
     })
   } else if (typeof req.body == undefined) {
     res.status(400).json({
       status: "error",
-      message: {body: "The request is missing a valid JSON body."}
+      message: { body: "The request is missing a valid JSON body." }
     })
   } else {
     const id = req.params.id
@@ -223,7 +223,7 @@ module.exports.deleteStory = (req, res) => {
   if (typeof req.params.id == undefined) {
     res.status(400).json({
       status: "fail",
-      message: { id: "Missing Story id!"}
+      message: { id: "Missing Story id!" }
     })
   } else {
     const id = req.params.id

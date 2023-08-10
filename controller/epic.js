@@ -60,8 +60,8 @@ module.exports.getEpicsByProject = (req, res) => {
   } else {
     Project.findById(projectid).then(project => {
       // find epic by id and get tasks
-      if (project.length > 0) {
-        Epic.findById(project[0]._id)
+      if (project) {
+        Epic.find({project: project._id})
           .then(epics => {
             res.status(200).json({
               status: "success",
