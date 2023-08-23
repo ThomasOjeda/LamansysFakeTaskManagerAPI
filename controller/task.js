@@ -51,7 +51,7 @@ module.exports.getTask = (req, res) => {
 module.exports.getTasksByStory = (req, res) => {
   const storyid = req.params.id
 
-  if (epicid == null || epicid == undefined) {
+  if (storyid == null || storyid == undefined) {
     res.status(400).json({
       status: "fail",
       data: { id: "Story Id is required!" }
@@ -144,7 +144,10 @@ module.exports.editTask = (req, res) => {
         task.story = req.body.story || task.story;
         task.created = req.body.created || task.created;
         task.due = req.body.due || task.due;
-        task.done = req.body.done || task.done;
+
+        if(req.body.done !== null && req.body.done !== undefined) {
+          task.done = req.body.done  
+        }
 
         task.save().then(task => res.json({
           status: "success",
