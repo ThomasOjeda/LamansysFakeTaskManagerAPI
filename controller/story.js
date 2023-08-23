@@ -161,7 +161,7 @@ module.exports.addStory = (req, res) => {
       epic: req.body.epic,
       sprint: req.body.sprint || null,
       owner: req.body.owner || null,
-      assignedTo: [req.body.owner] || [],
+      assignedTo: req.body.assignedTo || [],
       points: req.body.points || null,
       created: req.body.created || Date.now(),
       due: req.body.due || null,
@@ -202,7 +202,7 @@ module.exports.editStory = (req, res) => {
         story.epic = req.body.epic || story.epic;
         story.sprint = req.body.sprint || story.sprint;
         story.owner = req.body.owner || story.owner;
-        story.assignedTo = [] || story.assignedTo;
+        story.assignedTo = req.body.assignedTo || story.assignedTo
         story.points = req.body.points || story.points;
         story.created = req.body.created || story.created;
         story.due = req.body.due || story.due;
@@ -210,7 +210,7 @@ module.exports.editStory = (req, res) => {
         story.finished = req.body.finished || story.finished;
         story.status = req.body.status || story.status;
         story.icon = req.body.icon || story.icon;
-
+        
         story.save().then(story => res.status(200).json({
           status: "success",
           data: story
