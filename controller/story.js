@@ -198,18 +198,34 @@ module.exports.editStory = (req, res) => {
     Story.findById(id)
       .then((story) => {
         story.name = req.body.name || story.name;
-        story.description = req.body.description || story.description;
+        if(req.body.description !== undefined) {
+          story.description = req.body.description
+        }
         story.epic = req.body.epic || story.epic;
-        story.sprint = req.body.sprint || story.sprint;
-        story.owner = req.body.owner || story.owner;
+        if(req.body.sprint !== undefined) {
+          story.sprint = req.body.sprint
+        }
+        if(req.body.owner !== undefined) {
+          story.owner = req.body.owner
+        }
         story.assignedTo = req.body.assignedTo || story.assignedTo
-        story.points = req.body.points || story.points;
+        if(req.body.points !== undefined) {
+          story.points = req.body.points
+        }
         story.created = req.body.created || story.created;
-        story.due = req.body.due || story.due;
-        story.started = req.body.started || story.started;
-        story.finished = req.body.finished || story.finished;
+        if(req.body.due !== undefined) {
+          story.due = req.body.due
+        }
+        if(req.body.started !== undefined) {
+          story.started = req.body.started
+        }
+        if(req.body.finished !== undefined) {
+          story.finished = req.body.finished
+        }
         story.status = req.body.status || story.status;
-        story.icon = req.body.icon || story.icon;
+        if(req.body.icon !== undefined) {
+          story.icon = req.body.icon
+        }
         
         story.save().then(story => res.status(200).json({
           status: "success",
