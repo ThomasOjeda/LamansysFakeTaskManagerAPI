@@ -30,23 +30,35 @@ module.exports.login = (req, res) => {
             });
             //console.log(jsontoken);
             return res.status(200).json({
-              success: true,
-              message: "Authorized",
-              user: user,
-              token: token,
-            });
+              success: true, // remove this in next iteration
+              message: "Authorized",  // remove this in next iteration
+              user: user,  // remove this in next iteration
+              token: token,  // remove this in next iteration
+              status: "success",
+              data: {
+                user: user,
+                token: token,
+                message: "Authorized"
+              }
+            })
           } else {
             //not authorized
             return res.status(401).json({
-              success: true,
-              message: "Invalid username or password",
+              success: false, // remove this in next iteration 
+              message: "Invalid username or password", // remove this in next iteration
+              status: "fail",
+              data: { 
+                username: "Maybe username is invalid!", 
+                password: "Maybe password is invalid!"
+              }
             });
           }
         }
       })
       .catch((err) => {
         return res.status(500).json({
-          success: false,
+          success: false, // remove this in next iteration
+          status: "error",
           message: err,
         });
       });
